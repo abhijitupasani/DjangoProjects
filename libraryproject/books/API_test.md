@@ -73,3 +73,25 @@ Use the new access token:
 Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/books/" `
     -Headers @{Authorization="Bearer <your_new_access_token_here>"} |
     ConvertTo-Json -
+```
+
+## 9. Search by Title
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/books/?search=Harry" `
+    -Headers @{Authorization="Bearer <your_access_token>"} `
+    | ConvertTo-Json -Depth 10
+```
+## 10. Order by Title (Ascending)
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/books/?ordering=title" `
+    -Headers @{Authorization="Bearer <your_access_token>"} `
+    | ConvertTo-Json -Depth 10
+```
+
+## 11. Order by Title (Descending)
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/books/?ordering=-title" `
+    -Headers @{Authorization="Bearer <your_access_token>"} `
+    | ConvertTo-Json -Depth 10
+```
+
