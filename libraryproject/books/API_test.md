@@ -94,4 +94,11 @@ Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/books/?ordering=-title" `
     -Headers @{Authorization="Bearer <your_access_token>"} `
     | ConvertTo-Json -Depth 10
 ```
-
+## 12. Test upload from PowerShell
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/books/" `
+    -Method Post `
+    -Headers @{Authorization="Bearer <your_access_token>"} `
+    -Form @{ title="Test Book"; author="John Doe"; published_date="2024-08-13"; cover=Get-Item "C:\path\to\image.jpg" } |
+    ConvertTo-Json -Depth 10
+```
