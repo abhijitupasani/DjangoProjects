@@ -10,7 +10,7 @@ class BookSerializer(serializers.ModelSerializer):
     publisher = PublisherSerializer(read_only=True)
     class Meta:
         model = Book
-        fields = ['id', 'title', 'author', 'published_date', 'cover', 'created_by']
+        fields = ['id', 'title', 'author', 'published_date', 'cover', 'created_by', 'publisher']
         read_only_fields = ['created_by']  
         
     def create(self, validated_data):
