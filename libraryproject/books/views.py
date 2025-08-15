@@ -42,4 +42,14 @@ def book_delete(request, id):
     else:
         return render(request, 'books/book_confirm_delete.html', {'book': book})
     
-            
+
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm()
+    
+    return render(request, 'books/book_form.html', {'form': form})
