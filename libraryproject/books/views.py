@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .serializers import BookSerializer
 from django.shortcuts import render,redirect, get_object_or_404
 from django.http import JsonResponse
@@ -140,4 +141,6 @@ def add_book(request):
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow read-only access to unauthenticated users
+    
     
