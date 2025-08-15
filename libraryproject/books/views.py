@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import BookSerializer
 from django.shortcuts import render,redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Book
+from .models import Book, Publisher
 from django import forms
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -148,3 +148,5 @@ class BookViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'author']
     ordering_fields  = ['published_date','title']
     
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
