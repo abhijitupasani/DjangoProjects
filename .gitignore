@@ -1,0 +1,35 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+ENV/
+
+# Django stuff:
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Local settings (if any)
+local_settings.py
+
+# Migrations cache (keep the files, ignore compiled pyc)
+*/migrations/__pycache__/
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
