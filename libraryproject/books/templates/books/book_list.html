@@ -1,13 +1,153 @@
-<h1>Books</h1>
-<a href="{% url 'book_create' %}">Add New Book</a>
-<ul>
-    {% for book in books %}
-        <li>
-            {{ book.title }} by {{ book.author }} ({{ book.published_date }})
-            <a href="{% url 'book_update' book.id %}">Edit</a>
-            <a href="{% url 'book_delete' book.id %}">Delete</a>
-        </li>
-    {% empty %}
-        <li>No books found.</li>
-    {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block title %}Books{% endblock %}
+
+{% block content %}
+<h2>Books</h2>
+
+<!-- Form to add a new book -->
+<form id="book-form">
+    <input type="text" id="title" placeholder="Title" required>
+    <input type="text" id="author" placeholder="Author" required>
+    <input type="date" id="published_date" required>
+    <select id="publisher">
+        {% for pub in publishers %}
+        <option value="{{ pub.id }}">{{ pub.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Add Book</button>
+</form>
+
+<hr>
+
+<!-- Table to display books -->
+<table border="1" id="books-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Published Date</th>
+            <th>Publisher</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Filled dynamically by JS -->
+    </tbody>
+</table>
+
+<!-- Modal for editing book -->
+<div id="edit-modal" style="display:none; position:fixed; top:20%; left:30%; background:white; padding:20px; border:1px solid black;">
+    <h3>Edit Book</h3>
+    <input type="hidden" id="edit-book-id">
+    <input type="text" id="edit-title" placeholder="Title" required>
+    <input type="text" id="edit-author" placeholder="Author" required>
+    <input type="date" id="edit-published_date" required>
+    <select id="edit-publisher">
+        {% for pub in publishers %}
+        <option value="{{ pub.id }}">{{ pub.name }}</option>
+        {% endfor %}
+    </select>
+    <button id="update-book-btn">Update</button>
+    <button onclick="closeModal()">Cancel</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const csrftoken = document.querySelector('[name=csrf-token]').content;
+
+// Fetch and render books
+async function fetchBooks() {
+    const response = await fetch('/api/books/');
+    const books = await response.json();
+    const tbody = document.querySelector('#books-table tbody');
+    tbody.innerHTML = '';
+    books.forEach(book => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.published_date}</td>
+            <td>${book.publisher?.name || ''}</td>
+            <td>
+                <button onclick="openEditModal(${book.id}, '${book.title}', '${book.author}', '${book.published_date}', ${book.publisher?.id || ''})">Edit</button>
+                <button onclick="deleteBook(${book.id})">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Add a new book
+document.getElementById('book-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const data = {
+        title: document.getElementById('title').value,
+        author: document.getElementById('author').value,
+        published_date: document.getElementById('published_date').value,
+        publisher_id: document.getElementById('publisher').value
+    };
+    await fetch('/api/books/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(data)
+    });
+    e.target.reset();
+    fetchBooks();
+});
+
+// Delete a book
+async function deleteBook(id) {
+    await fetch(`/api/books/${id}/`, {
+        method: 'DELETE',
+        headers: { 'X-CSRFToken': csrftoken }
+    });
+    fetchBooks();
+}
+
+// Open edit modal and populate fields
+function openEditModal(id, title, author, date, publisher_id) {
+    document.getElementById('edit-book-id').value = id;
+    document.getElementById('edit-title').value = title;
+    document.getElementById('edit-author').value = author;
+    document.getElementById('edit-published_date').value = date;
+    document.getElementById('edit-publisher').value = publisher_id || '';
+    document.getElementById('edit-modal').style.display = 'block';
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+}
+
+// Update book
+document.getElementById('update-book-btn').addEventListener('click', async () => {
+    const id = document.getElementById('edit-book-id').value;
+    const data = {
+        title: document.getElementById('edit-title').value,
+        author: document.getElementById('edit-author').value,
+        published_date: document.getElementById('edit-published_date').value,
+        publisher_id: document.getElementById('edit-publisher').value
+    };
+    await fetch(`/api/books/${id}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(data)
+    });
+    closeModal();
+    fetchBooks();
+});
+
+// Initial load
+fetchBooks();
+</script>
+{% endblock %}

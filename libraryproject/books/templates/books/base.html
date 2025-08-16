@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Library{% endblock %}</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1>Library App</h1>
+        <nav>
+            <a href="{% url 'book-list' %}">Books</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>JayNar Tech Library</p>
+    </footer>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
